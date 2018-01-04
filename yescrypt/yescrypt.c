@@ -73,43 +73,45 @@ void yescrypt_hash(const char *input, char *output)
                      (uint8_t *) output, 32);
 }
 
-#include <stdbool.h>
-struct work_restart {
-	volatile unsigned long	restart;
-	char			padding[128 - sizeof(unsigned long)];
-};
 
-extern struct work_restart *work_restart;
-extern bool fulltest(const uint32_t *hash, const uint32_t *target);
 
-static int pretest(const uint32_t *hash, const uint32_t *target)
-{
-	return hash[7] < target[7];
-}
+// #include <stdbool.h>
+// struct work_restart {
+// 	volatile unsigned long	restart;
+// 	char			padding[128 - sizeof(unsigned long)];
+// };
 
-int scanhash_yescrypt(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
-		      uint32_t max_nonce, unsigned long *hashes_done)
-{
-	uint32_t data[20] __attribute__((aligned(128)));
-	uint32_t hash[8] __attribute__((aligned(32)));
-	uint32_t n = pdata[19] - 1;
-	const uint32_t first_nonce = pdata[19];
+// extern struct work_restart *work_restart;
+// extern bool fulltest(const uint32_t *hash, const uint32_t *target);
 
-	for (int i = 0; i < 20; i++) {
-		be32enc(&data[i], pdata[i]);
-	}
-	do {
-		be32enc(&data[19], ++n);
-		yescrypt_hash((char *)data, (char *)hash);
-		if (pretest(hash, ptarget) && fulltest(hash, ptarget)) {
-			pdata[19] = n;
-			*hashes_done = n - first_nonce + 1;
-			return 1;
-		}
-	} while (n < max_nonce && !work_restart[thr_id].restart);
+// static int pretest(const uint32_t *hash, const uint32_t *target)
+// {
+// 	return hash[7] < target[7];
+// }
+
+// int scanhash_yescrypt(int thr_id, uint32_t *pdata, const uint32_t *ptarget,
+// 		      uint32_t max_nonce, unsigned long *hashes_done)
+// {
+// 	uint32_t data[20] __attribute__((aligned(128)));
+// 	uint32_t hash[8] __attribute__((aligned(32)));
+// 	uint32_t n = pdata[19] - 1;
+// 	const uint32_t first_nonce = pdata[19];
+
+// 	for (int i = 0; i < 20; i++) {
+// 		be32enc(&data[i], pdata[i]);
+// 	}
+// 	do {
+// 		be32enc(&data[19], ++n);
+// 		yescrypt_hash((char *)data, (char *)hash);
+// 		if (pretest(hash, ptarget) && fulltest(hash, ptarget)) {
+// 			pdata[19] = n;
+// 			*hashes_done = n - first_nonce + 1;
+// 			return 1;
+// 		}
+// 	} while (n < max_nonce && !work_restart[thr_id].restart);
 	
-	*hashes_done = n - first_nonce + 1;
-	pdata[19] = n;
-	return 0;
-}
+// 	*hashes_done = n - first_nonce + 1;
+// 	pdata[19] = n;
+// 	return 0;
+// }
 
