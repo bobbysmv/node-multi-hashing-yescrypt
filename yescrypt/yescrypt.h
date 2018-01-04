@@ -273,6 +273,6 @@ static int yescrypt_kdf(const yescrypt_shared_t * __shared,
 
 
 // 
-static void yescrypt_hash(const char *input, char *output);
+void yescrypt_hash(const char *input, char *output);
 
 #endif /* !_YESCRYPT_H_ */
